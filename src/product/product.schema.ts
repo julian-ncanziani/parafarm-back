@@ -7,23 +7,26 @@ export class Product extends Document {
   @Prop()
   product_id: string;
 
-  @Prop()
+  @Prop({unique: true, required: true})
   name: string;
 
   @Prop()
   description: string;
 
-  @Prop()
+  @Prop({default: 0})
   price: number;
 
-  @Prop()
+  @Prop({default: 0})
   stock: number;
 
-  @Prop({ type: String , ref: 'Category' }) // Relación con la categoría
+  @Prop({ type: String , ref: 'Category', default: "66d8df62ebc4d378276899dd" }) // Relación con la categoría
   category_id;
 
   @Prop()
   image: string;
+
+  @Prop({default: false})
+  active: boolean;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

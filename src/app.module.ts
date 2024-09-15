@@ -24,7 +24,7 @@ import { CategoryModule } from './category/category.module';
     ProductModule,
     OrderModule,
     UserModule,
-    CategoryModule
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

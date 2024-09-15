@@ -19,6 +19,6 @@ async function bootstrap() {
     forbidUnknownValues: true, // Lanza una excepción si se encuentran valores no permitidos
   }));
 
-  await app.listen(3000);
+  await app.listen(3001);
 }
 bootstrap();

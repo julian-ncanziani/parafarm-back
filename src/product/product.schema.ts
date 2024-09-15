@@ -19,7 +19,7 @@ export class Product extends Document {
   @Prop({default: 0})
   stock: number;
 
-  @Prop({ type: String , ref: 'Category', default: "66d8df62ebc4d378276899dd" }) // Relación con la categoría
+  @Prop({ type: String , ref: 'Category', default: "66d8df62ebc4d378276899dd" }) // Relación con la categoría "sin categoria"
   category_id;
 
   @Prop()

@@ -9,8 +9,13 @@ export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Get()
-  async getAll(): Promise<Product[]>{
+  async getAll(): Promise<Product[]> {
     return await this.productService.getAll();
+  }
+
+  @Get('/active')
+  async getActiveProducts(): Promise<Product[]> {
+    return await this.productService.getActiveProducts();
   }
 
   @Get('/:name')

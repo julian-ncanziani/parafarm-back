@@ -67,4 +67,12 @@ export class ProductService {
         }
     }
 
+    async getActiveProducts(): Promise<Product[]> {
+        try {           
+            return await this.productModel.find({active: true});
+        } catch (error) {
+            throw new Error('Error product service getActiveproducts: ' + error.message);
+        }
+    }
+
 }

@@ -14,7 +14,8 @@ export class NewProductDTO {
   price: number;
 
   @IsNumber()
-  stock: number;
+  @IsOptional()
+  stock?: number;
 
   @IsMongoId() // Asegúrate de validar que sea un ID de MongoDB válido
   @IsOptional()

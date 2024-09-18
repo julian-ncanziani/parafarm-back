@@ -18,9 +18,9 @@ export class ProductController {
     return await this.productService.getActiveProducts();
   }
 
-  @Get('/:name')
-  async getByName(@Param('name') name: string): Promise<Product> {
-    return await this.productService.getByName(name);
+  @Get('/:id')
+  async getById(@Param('id') id: string): Promise<Product> {
+    return await this.productService.getById(id);
   }
 
   @Get('/category/:id')

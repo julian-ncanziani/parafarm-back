@@ -29,6 +29,16 @@ export class ProductService {
         }
     }
 
+    async getById(id: string): Promise<Product> {
+        try {
+            const product = await this.productModel.findById(id);
+            if(!product) throw new NotFoundException('Producto no encontrado');
+            return product;
+        } catch (error) {
+            throw('Error product service getById.' + error.message)
+        }
+    }
+
     async getByCategory(category: string): Promise<Product[]> {
         try {
             return await this.productModel.find({category_id: category})

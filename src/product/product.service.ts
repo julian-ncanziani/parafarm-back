@@ -1,8 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Product } from './product.schema';
 import { NewProductDTO } from './dto/newProduct.dto';
+import { UpdateProductDto } from './dto/updateProduct.dto';
 
 
 @Injectable()
@@ -56,17 +57,47 @@ export class ProductService {
         }
     }
 
-    async updateField(productId: string, fieldName: string, fieldValue: boolean | string | number): Promise<Product> {
-        try {
-            const product = await this.productModel.findById(productId);
-            if (!product) throw new NotFoundException('Producto no encontrado');
+    async updateProduct(id: string, updates: UpdateProductDto[]): Promise<Product> {
 
-            product[fieldName] = fieldValue;
-            await product.save();
-            return product;
-        } catch (error) {
-            throw new Error('Error product service updateField: ' + error.message);
+        const updateObject = updates.reduce((acc, update) => {
+          const { field, value, valueNumber } = update;
+    
+          // Validación básica para evitar campos vacíos o nulos
+          if (!field) {
+            throw new BadRequestException(`Campo no especificado`);
+          }
+    
+          // Validar que el valor sea adecuado para el campo
+          if (field === 'price' && valueNumber !== undefined) {
+            if (valueNumber <= 0) {
+              throw new BadRequestException(`El precio debe ser mayor a cero`);
+            }
+            acc[field] = valueNumber;
+          } else if (field === 'stock' && valueNumber !== undefined) {
+            if (valueNumber < 0) {
+              throw new BadRequestException(`El stock no puede ser negativo`);
+            }
+            acc[field] = valueNumber;
+          } else if (value !== undefined) {
+            acc[field] = value;
+          } else {
+            throw new BadRequestException(`Valor inválido para el campo ${field}`);
+          }
+    
+          return acc;
+        }, {});
+
+        // Buscar y actualizar el producto
+        const updatedProduct = await this.productModel.findByIdAndUpdate(id, updateObject, {
+          new: true,
+          runValidators: true,
+        });
+    
+        if (!updatedProduct) {
+          throw new NotFoundException('Producto no encontrado');
         }
+    
+        return updatedProduct;
     }
 
     async deleteProduct(id: string): Promise<Product> {

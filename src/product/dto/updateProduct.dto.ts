@@ -1,12 +1,15 @@
-import { IsString, IsNotEmpty, IsOptional, IsNumber, IsBoolean, IsObject } from 'class-validator';
+import { IsOptional, IsNumber, IsString, IsNotEmpty } from 'class-validator';
 
-export class UpdateFieldDTO {
+export class UpdateProductDto {
+  @IsNotEmpty()
+  @IsString()
+  field: string; // Campo que se quiere actualizar (ej. "price", "stock")
 
-    @IsString()
-    @IsNotEmpty()
-    fieldName: string;
+  @IsOptional()
+  @IsString()
+  value?: string; // Valor de tipo string si es necesario
 
-    @IsNotEmpty()
-    fieldValue: boolean | string | number;
-
+  @IsOptional()
+  @IsNumber()
+  valueNumber?: number; // Valor de tipo number si es necesario
 }

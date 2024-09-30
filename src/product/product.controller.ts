@@ -40,6 +40,11 @@ export class ProductController {
     return this.productService.create(data);
   };
 
+  @Patch('/updatemany')
+  async updatemany(@Body() body: BulkUpdateDto) { 
+    return await this.productService.updateMany(body);
+  };
+  
 
   @Patch('/updateone/:id')
   async updateProduct(
@@ -57,12 +62,6 @@ export class ProductController {
       // Puedes manejar errores específicos aquí si es necesario
       throw new NotFoundException('Producto no encontrado');
     }
-  };
-
-
-  @Patch('/updatemany')
-  async updatemany(@Body() body: BulkUpdateDto) { 
-    return await this.productService.updateMany(body);
   };
 
 

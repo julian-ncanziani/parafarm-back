@@ -130,7 +130,7 @@ export class ProductService {
 
     async updateMany(bulkUpdateDto: BulkUpdateDto) {
         const { productIds, price, active } = bulkUpdateDto;
-
+        
         const updateFields: any = {};
 
         // Si se incluye el campo `active`, agregamos la actualización a los campos

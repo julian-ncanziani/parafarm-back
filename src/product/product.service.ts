@@ -1,15 +1,20 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { 
+    Injectable, 
+    NotFoundException, 
+    BadRequestException, 
+    InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Product } from './product.schema';
 import { NewProductDTO } from './dto/newProduct.dto';
 import { UpdateProductDto } from './dto/updateProduct.dto';
-
+import { BulkUpdateDto } from './dto/bulkupdate.dto';
 
 @Injectable()
 export class ProductService {
 
-    constructor(@InjectModel('Product') private readonly productModel: Model<Product>){}
+    constructor(@InjectModel('Product') private readonly productModel: Model<Product>){};
+
 
     async getAll(): Promise<Product[]>{
         try {
@@ -17,7 +22,8 @@ export class ProductService {
         } catch (error) {
             throw('Error product service getAll.' + error.message)
         }
-    }
+    };
+
 
     async getByName(name): Promise<Product> {
         try {
@@ -28,7 +34,8 @@ export class ProductService {
         } catch (error) {
             throw(error)
         }
-    }
+    };
+
 
     async getById(id: string): Promise<Product> {
         try {
@@ -38,7 +45,8 @@ export class ProductService {
         } catch (error) {
             throw('Error product service getById.' + error.message)
         }
-    }
+    };
+
 
     async getByCategory(category: string): Promise<Product[]> {
         try {
@@ -46,7 +54,8 @@ export class ProductService {
         } catch (error) {
             throw('Error product service getByCAtegory.' + error.message)
         }
-    }
+    };
+
 
     async create(data: NewProductDTO): Promise<Product> {
         try {
@@ -55,7 +64,8 @@ export class ProductService {
             console.log(error.message)
             throw('Error product service create.' + error.message)
         }
-    }
+    };
+
 
     async updateProduct(id: string, updates: UpdateProductDto[]): Promise<Product> {
 
@@ -98,7 +108,8 @@ export class ProductService {
         }
     
         return updatedProduct;
-    }
+    };
+
 
     async deleteProduct(id: string): Promise<Product> {
         try {
@@ -106,7 +117,8 @@ export class ProductService {
         } catch (error) {
             throw new Error('Error product service deleteProduct: ' + error.message);
         }
-    }
+    };
+
 
     async getActiveProducts(): Promise<Product[]> {
         try {           
@@ -114,6 +126,49 @@ export class ProductService {
         } catch (error) {
             throw new Error('Error product service getActiveproducts: ' + error.message);
         }
-    }
+    };
 
-}
+    async updateMany(bulkUpdateDto: BulkUpdateDto) {
+        const { productIds, price, active } = bulkUpdateDto;
+
+        const updateFields: any = {};
+
+        // Si se incluye el campo `active`, agregamos la actualización a los campos
+        if (active !== undefined) {
+        updateFields.active = active;
+        }
+
+        // Si `price` está presente, actualizamos el precio
+        if (price) {
+            const { amount, percentaje } = price;
+
+            if (percentaje) {
+                // Si percentage es true, actualiza el precio basado en porcentaje sobre el valor actual
+                const products = await this.productModel.find({ _id: { $in: productIds } });
+
+                for (const product of products) {
+                const newPrice = product.price * (1 + amount / 100);
+                updateFields.price = newPrice;
+
+                await this.productModel.updateOne(
+                    { _id: product._id },
+                    { $set: updateFields }
+                );
+                }
+
+                return { message: 'Productos actualizados con porcentaje sobre el precio actual y campo active (si aplica)' };
+                } else {
+                    // Si percentage es false o no está presente, actualiza el precio directamente
+                    updateFields.price = amount;
+                }
+        }
+
+        // Realiza la actualización de todos los productos con los campos correspondientes
+        return this.productModel.updateMany(
+            { _id: { $in: productIds } },
+            { $set: updateFields }
+        );
+    };
+
+
+};

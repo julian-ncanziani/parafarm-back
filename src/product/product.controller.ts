@@ -3,37 +3,45 @@ import { ProductService } from './product.service';
 import { Product } from './product.schema';
 import { NewProductDTO } from './dto/newProduct.dto';
 import { UpdateProductDto } from './dto/updateProduct.dto';
+import { BulkUpdateDto } from './dto/bulkupdate.dto';
 
 @Controller('products')
 export class ProductController {
+
   constructor(private readonly productService: ProductService) {}
+
 
   @Get()
   async getAll(): Promise<Product[]> {
     return await this.productService.getAll();
   };
 
+
   @Get('/active')
   async getActiveProducts(): Promise<Product[]> {
     return await this.productService.getActiveProducts();
   };
+
 
   @Get('/:id')
   async getById(@Param('id') id: string): Promise<Product> {
     return await this.productService.getById(id);
   };
 
+
   @Get('/category/:id')
   async getByCategory(@Param('id') id: string): Promise<Product[]> {
     return await this.productService.getByCategory(id);
   };
+
 
   @Post()
   async newProduct(@Body() data: NewProductDTO): Promise<Product> {
     return this.productService.create(data);
   };
 
-  @Patch('/:id')
+
+  @Patch('/updateone/:id')
   async updateProduct(
     @Param('id') id: string,
     @Body() updates: UpdateProductDto[],
@@ -51,9 +59,17 @@ export class ProductController {
     }
   };
 
+
+  @Patch('/updatemany')
+  async updatemany(@Body() body: BulkUpdateDto) { 
+    return await this.productService.updateMany(body);
+  };
+
+
   @Delete('/:id')
   async deleteProduct(@Param('id') id: string): Promise<Product> {
     return await this.productService.deleteProduct(id);
   };
+
   
 }
